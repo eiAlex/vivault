@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup. css">
+</head>
+<body>
+  <div class="container">
+    <h2>🔐 Cofre de Senhas</h2>
+    
+    <div id="locked-view">
+      <input type="password" id="master-password" placeholder="Senha mestra">
+      <button id="unlock-btn">Desbloquear</button>
+    </div>
+    
+    <div id="unlocked-view" style="display: none;">
+      <input type="text" id="search" placeholder="Buscar... ">
+      
+      <div id="passwords-list"></div>
+      
+      <button id="add-new-btn">+ Adicionar Nova Senha</button>
+      
+      <div id="add-form" style="display: none;">
+        <input type="text" id="site-name" placeholder="Nome do site">
+        <input type="text" id="site-url" placeholder="URL">
+        <input type="text" id="username" placeholder="Usuário/Email">
+        <input type="password" id="password" placeholder="Senha">
+        <button id="generate-btn">Gerar Senha Forte</button>
+        <button id="save-btn">Salvar</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
