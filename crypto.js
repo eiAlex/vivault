@@ -1,9 +1,9 @@
-// Usa Web Crypto API
+//Web Crypto API
 async function encryptPassword(password, masterPassword) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
   
-  // Deriva chave da senha mestra
+  // Derive key from master password
   const keyMaterial = await window.crypto.subtle.importKey(
     'raw',
     encoder.encode(masterPassword),
@@ -15,7 +15,7 @@ async function encryptPassword(password, masterPassword) {
   const key = await window. crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: encoder.encode('salt-único'), // Use salt aleatório em produção
+      salt: encoder.encode('salt-único'), // TODO: Use a unique salt in production
       iterations: 100000,
       hash: 'SHA-256'
     },

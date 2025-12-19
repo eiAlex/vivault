@@ -1,0 +1,89 @@
+/* Content Script Styles for ViVault Extension */
+
+/* Password field highlighting and autofill styling */
+.vivault-highlighted {
+    border: 2px solid #4a90e2 !important;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5) !important;
+}
+
+/* ViVault tooltip styling */
+.vivault-tooltip {
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+/* ViVault suggestion dropdown */
+.vivault-suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10001;
+    display: none;
+}
+
+.vivault-suggestions.show {
+    display: block;
+}
+
+.vivault-suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.vivault-suggestion-item:hover {
+    background-color: #f5f5f5;
+}
+
+.vivault-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+/* Security indicator */
+.vivault-security-indicator {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234a90e2"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V16H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/></svg>') no-repeat center;
+    background-size: contain;
+    z-index: 10002;
+}
+
+/* Form field enhancement */
+input[type="password"].vivault-enhanced,
+input[type="email"].vivault-enhanced,
+input[type="text"].vivault-enhanced {
+    padding-right: 25px !important;
+}
+
+/* Loading spinner */
+.vivault-loading {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #4a90e2;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: vivault-spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    z-index: 10003;
+}
+
+@keyframes vivault-spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
+}
