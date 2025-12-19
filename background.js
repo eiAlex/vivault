@@ -103,10 +103,10 @@ async function handleUnlockVault(request, sendResponse) {
         unlockTime: Date.now()
       });
       
-      console.log('Master password set for first time');
+      console.log('PIN set for first time');
       sendResponse({ 
         success: true, 
-        message: 'Senha mestra definida com sucesso!' 
+        message: 'PIN set successfully!' 
       });
     } else {
       // Verify existing master password
@@ -125,13 +125,13 @@ async function handleUnlockVault(request, sendResponse) {
         console.log('Vault unlocked successfully');
         sendResponse({ 
           success: true, 
-          message: 'Cofre desbloqueado com sucesso!' 
+          message: 'Vault unlocked successfully!' 
         });
       } else {
-        console.log('Invalid master password');
+        console.log('Invalid PIN');
         sendResponse({ 
           success: false, 
-          message: 'Senha mestra incorreta' 
+          message: 'Incorrect PIN' 
         });
       }
     }
@@ -139,7 +139,7 @@ async function handleUnlockVault(request, sendResponse) {
     console.error('Error unlocking vault:', error);
     sendResponse({ 
       success: false, 
-      message: 'Erro interno ao desbloquear cofre' 
+      message: 'Internal error while unlocking vault' 
     });
   }
 }
@@ -154,7 +154,7 @@ async function handleGetPasswords(request, sendResponse) {
     
     if (!sessionResult.isUnlocked || !isUnlocked || !masterKey) {
       console.log('Vault is locked - session:', sessionResult.isUnlocked, 'memory:', isUnlocked, 'masterKey:', !!masterKey);
-      sendResponse({ success: false, message: 'Cofre bloqueado' });
+      sendResponse({ success: false, message: 'Vault is locked' });
       return;
     }
 
@@ -191,7 +191,7 @@ async function handleGetPasswords(request, sendResponse) {
 async function handleSavePassword(request, sendResponse) {
   try {
     if (!isUnlocked || !masterKey) {
-      sendResponse({ success: false, message: 'Cofre bloqueado' });
+      sendResponse({ success: false, message: 'Vault is locked' });
       return;
     }
 
@@ -216,13 +216,13 @@ async function handleSavePassword(request, sendResponse) {
 
     sendResponse({ 
       success: true, 
-      message: 'Senha salva com sucesso!' 
+      message: 'Password saved successfully !' 
     });
   } catch (error) {
     console.error('Error saving password:', error);
     sendResponse({ 
       success: false, 
-      message: 'Erro ao salvar senha' 
+      message: 'Error saving password' 
     });
   }
 }
@@ -231,7 +231,7 @@ async function handleSavePassword(request, sendResponse) {
 async function handleGetPasswordById(request, sendResponse) {
   try {
     if (!isUnlocked || !masterKey) {
-      sendResponse({ success: false, message: 'Cofre bloqueado' });
+      sendResponse({ success: false, message: 'Vault is locked' });
       return;
     }
 
@@ -241,7 +241,7 @@ async function handleGetPasswordById(request, sendResponse) {
     
     const password = passwords.find(p => p.id === passwordId);
     if (!password) {
-      sendResponse({ success: false, message: 'Senha não encontrada' });
+      sendResponse({ success: false, message: 'Password not found' });
       return;
     }
 
@@ -256,7 +256,7 @@ async function handleGetPasswordById(request, sendResponse) {
     console.error('Error getting password by ID:', error);
     sendResponse({ 
       success: false, 
-      message: 'Erro ao descriptografar senha' 
+      message: 'Error decrypting password' 
     });
   }
 }

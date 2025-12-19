@@ -6,67 +6,67 @@ let enhancedFields = new Set();
 
 // Seletores avançados para campos de usuário/email
 const usernameSelectors = [
-  // Por tipo
+  // by type
   'input[type="email"]',
   'input[type="text"][autocomplete*="username"]',
   'input[type="text"][autocomplete*="email"]',
   
-  // Por nome do campo
+  // By field name
   'input[name*="user" i]',
   'input[name*="email" i]', 
   'input[name*="login" i]',
   'input[name*="account" i]',
   'input[name*="username" i]',
   
-  // Por ID
+  // By ID
   'input[id*="user" i]',
   'input[id*="email" i]',
   'input[id*="login" i]',
   'input[id*="account" i]',
   
-  // Por placeholder
+  // By placeholder
   'input[placeholder*="email" i]',
   'input[placeholder*="usuário" i]',
   'input[placeholder*="usuario" i]',
   'input[placeholder*="user" i]',
   'input[placeholder*="login" i]',
   
-  // Por classe CSS
+  // By CSS class
   'input[class*="email" i]',
   'input[class*="user" i]',
   'input[class*="login" i]'
 ];
 
-// Seletores avançados para campos de senha
+// Advanced selectors for password fields
 const passwordSelectors = [
-  // Por tipo (principal)
+  // By type (main)
   'input[type="password"]',
   
-  // Por nome
+  // By name
   'input[name*="pass" i]',
   'input[name*="pwd" i]',
   'input[name*="senha" i]',
   
-  // Por ID
+  // By ID
   'input[id*="pass" i]',
   'input[id*="pwd" i]',
   'input[id*="senha" i]',
   
-  // Por placeholder
+  // By placeholder
   'input[placeholder*="password" i]',
   'input[placeholder*="senha" i]',
   'input[placeholder*="pass" i]',
   
-  // Por autocomplete
+  // By autocomplete
   'input[autocomplete="current-password"]',
   'input[autocomplete="new-password"]',
   
-  // Campos que mudaram para type="text" mas são senhas
+  // Fields that changed to type="text" but are passwords
   'input[type="text"][name*="pass" i]',
   'input[type="text"][placeholder*="senha" i]'
 ];
 
-// Detecta todos os campos de login na página
+// Detect all login fields on the page
 function detectAllLoginFields() {
   console.log('Detecting login fields...');
   
@@ -93,7 +93,7 @@ function detectAllLoginFields() {
       enhanceLoginFields(fieldPair);
     } else {
       console.log('Password field without username:', getFieldIdentifier(passwordField));
-      // Ainda assim, enhance o campo de senha
+      // Still enhance the password field
       enhancePasswordField(passwordField);
     }
   });
@@ -101,7 +101,7 @@ function detectAllLoginFields() {
   console.log(`Enhanced ${loginFields.size} login field pairs`);
 }
 
-// Encontra todos os campos de senha
+// Find all password fields
 function findPasswordFields() {
   const fields = [];
   
@@ -118,10 +118,10 @@ function findPasswordFields() {
     }
   });
   
-  // Filtrar campos que não parecem ser senhas reais
+  // Filter out fields that don't seem to be real passwords
   return fields.filter(field => {
     const identifier = getFieldIdentifier(field).toLowerCase();
-    // Excluir campos de confirmação/repetição
+    // Exclude confirmation/repeat fields
     if (identifier.includes('confirm') || 
         identifier.includes('repeat') || 
         identifier.includes('again') ||
@@ -133,11 +133,11 @@ function findPasswordFields() {
   });
 }
 
-// Encontra o campo de usuário mais próximo para um campo de senha
+// Find the closest username field for a given password field
 function findUsernameFieldFor(passwordField) {
   const form = passwordField.closest('form') || document;
   
-  // Tenta encontrar campos de usuário no mesmo formulário
+  // Try to find username fields in the same form
   for (const selector of usernameSelectors) {
     try {
       const candidates = form.querySelectorAll(selector);
@@ -147,7 +147,7 @@ function findUsernameFieldFor(passwordField) {
             isLikelyUsernameField(candidate) &&
             !enhancedFields.has(candidate)) {
           
-          // Prioriza campos próximos ao campo de senha
+          // Prioritize fields close to the password field
           if (areFieldsRelated(candidate, passwordField)) {
             return candidate;
           }
@@ -161,7 +161,7 @@ function findUsernameFieldFor(passwordField) {
   return null;
 }
 
-// Verifica se um campo é visível e interativo
+// Checks if a field is visible and interactive
 function isVisibleField(field) {
   if (!field || field.type === 'hidden' || field.disabled) return false;
   
@@ -176,11 +176,11 @@ function isVisibleField(field) {
   return rect.width > 0 && rect.height > 0;
 }
 
-// Verifica se um campo parece ser de usuário/email
+// Checks if a field is likely a username/email field
 function isLikelyUsernameField(field) {
   const identifier = getFieldIdentifier(field).toLowerCase();
   
-  // Excluir campos que claramente não são de usuário
+  // Exclude fields that clearly are not usernames
   const excludePatterns = [
     'search', 'busca', 'pesquisa', 'query',
     'phone', 'tel', 'telefone', 'celular',
@@ -197,9 +197,9 @@ function isLikelyUsernameField(field) {
   return true;
 }
 
-// Verifica se dois campos estão relacionados (mesmo formulário, próximos, etc)
+// Checks if two fields are related (same form, close, etc)
 function areFieldsRelated(usernameField, passwordField) {
-  // Mesmo formulário
+  // Same form
   const usernameForm = usernameField.closest('form');
   const passwordForm = passwordField.closest('form');
   
@@ -207,44 +207,44 @@ function areFieldsRelated(usernameField, passwordField) {
     return true;
   }
   
-  // Proximidade no DOM
+  // Proximity in the DOM
   const usernameIndex = Array.from(document.querySelectorAll('input')).indexOf(usernameField);
   const passwordIndex = Array.from(document.querySelectorAll('input')).indexOf(passwordField);
   
   return Math.abs(usernameIndex - passwordIndex) <= 3;
 }
 
-// Obtém identificador do campo para debug
+// Gets the field identifier for debugging
 function getFieldIdentifier(field) {
   return field.id || field.name || field.placeholder || field.className || 'unnamed';
 }
 
-// Aplica melhorias visuais e funcionais nos campos de login
+// Applies visual and functional enhancements to login fields
 function enhanceLoginFields(fieldPair) {
   if (enhancedFields.has(fieldPair.username) || enhancedFields.has(fieldPair.password)) {
-    return; // Já foi processado
+    return; // Already processed
   }
   
   enhancePasswordField(fieldPair.password);
   enhanceUsernameField(fieldPair.username);
   
-  // Adiciona botão de preenchimento automático
+  // Adds autofill button
   addViVaultButton(fieldPair);
   
   enhancedFields.add(fieldPair.username);
   enhancedFields.add(fieldPair.password);
 }
 
-// Melhora campo de senha
+// Enhances password field
 function enhancePasswordField(passwordField) {
   if (enhancedFields.has(passwordField)) return;
   
   passwordField.classList.add('vivault-enhanced');
   
-  // Adiciona indicador de segurança
+  // Adds security indicator
   const indicator = document.createElement('div');
   indicator.className = 'vivault-security-indicator';
-  indicator.title = 'ViVault detectou este campo de senha';
+  indicator.title = 'ViVault detected this password field as a password.';
   
   passwordField.parentNode.style.position = 'relative';
   passwordField.parentNode.appendChild(indicator);
@@ -252,7 +252,7 @@ function enhancePasswordField(passwordField) {
   enhancedFields.add(passwordField);
 }
 
-// Melhora campo de usuário
+// Enhances username field
 function enhanceUsernameField(usernameField) {
   if (enhancedFields.has(usernameField)) return;
   
@@ -260,12 +260,12 @@ function enhanceUsernameField(usernameField) {
   enhancedFields.add(usernameField);
 }
 
-// Adiciona botão do ViVault
+// Adds ViVault button
 function addViVaultButton(fieldPair) {
   const button = document.createElement('button');
   button.innerHTML = '🔐';
   button.className = 'vivault-autofill-btn';
-  button.title = 'Preencher com ViVault';
+  button.title = 'Fill with ViVault';
   
   button.style.cssText = `
     position: absolute;
@@ -282,10 +282,10 @@ function addViVaultButton(fieldPair) {
     transition: all 0.2s ease;
   `;
   
-  // Posiciona o botão
+  // Positions the button
   positionButton(button, fieldPair.password);
   
-  // Eventos do botão
+  // Button events
   button.addEventListener('click', async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -305,19 +305,19 @@ function addViVaultButton(fieldPair) {
   
   document.body.appendChild(button);
   
-  // Reposiciona em caso de mudanças na página
+  // Repositions in case of page changes
   fieldPair.button = button;
   observeFieldChanges(fieldPair);
 }
 
-// Posiciona o botão próximo ao campo de senha
+// Positions the button near the password field
 function positionButton(button, passwordField) {
   const rect = passwordField.getBoundingClientRect();
   button.style.top = `${rect.top + window.scrollY + (rect.height - 32) / 2}px`;
   button.style.left = `${rect.right + window.scrollX - 40}px`;
 }
 
-// Observa mudanças nos campos para reposicionar botão
+// Observes changes in fields to reposition button
 function observeFieldChanges(fieldPair) {
   const observer = new ResizeObserver(() => {
     if (fieldPair.button) {
@@ -328,9 +328,9 @@ function observeFieldChanges(fieldPair) {
   observer.observe(fieldPair.password);
 }
 
-// Manipula o preenchimento automático
+// Handles autofill
 async function handleAutoFill(fieldPair) {
-  // Salva o conteúdo original do botão antes de qualquer operação
+  // Saves the original button content before any operation
   const button = fieldPair.button;
   const originalContent = button ? button.innerHTML : '🔐';
   
@@ -338,13 +338,13 @@ async function handleAutoFill(fieldPair) {
     const url = window.location.hostname;
     console.log('Requesting credentials for:', url);
     
-    // Mostra loading
+    // Shows loading
     if (button) {
       button.innerHTML = '⏳';
       button.disabled = true;
     }
     
-    // Solicita credenciais ao background script com retry
+    // Requests credentials from the background script with retry
     const response = await sendMessageWithRetry({ 
       action: 'getCredentials', 
       url: url 
@@ -353,7 +353,7 @@ async function handleAutoFill(fieldPair) {
     console.log('Credentials response:', response);
     
     if (response && response.success) {
-      // Preenche os campos com animação suave
+      // Fills fields with smooth animation
       console.log('Filling fields with:', { username: response.username, hasPassword: !!response.password });
       
       if (fieldPair.username && response.username) {
@@ -367,18 +367,18 @@ async function handleAutoFill(fieldPair) {
         }, 150);
       }
       
-      // Feedback visual
-      showFeedback(fieldPair.password, '✅ Credenciais preenchidas!');
+      // Visual feedback
+      showFeedback(fieldPair.password, '✅ Credentials filled!');
       
-      // Adiciona classe para indicar preenchimento
+      // Adds class to indicate filling
       fieldPair.username?.classList.add('vivault-filled');
       fieldPair.password?.classList.add('vivault-filled');
       
     } else {
       console.log('No credentials found for:', url);
-      showFeedback(fieldPair.password, '❌ Nenhuma senha salva para este site');
+      showFeedback(fieldPair.password, '❌ No saved password for this site');
       
-      // Sugere salvar credenciais
+      // Suggests saving credentials
       setTimeout(() => {
         showSaveCredentialsPrompt(fieldPair);
       }, 2000);
@@ -386,9 +386,9 @@ async function handleAutoFill(fieldPair) {
     
   } catch (error) {
     console.error('Error in autofill:', error);
-    showFeedback(fieldPair.password, '❌ Erro no preenchimento: ' + error.message);
+    showFeedback(fieldPair.password, '❌ Error in autofill: ' + error.message);
   } finally {
-    // Restaura botão
+    // Restores button
     if (fieldPair.button) {
       fieldPair.button.innerHTML = originalContent || '🔐';
       fieldPair.button.disabled = false;
@@ -396,7 +396,7 @@ async function handleAutoFill(fieldPair) {
   }
 }
 
-// Função auxiliar para enviar mensagens com retry
+// Helper function to send messages with retry
 async function sendMessageWithRetry(message, maxRetries = 3) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -422,10 +422,10 @@ async function sendMessageWithRetry(message, maxRetries = 3) {
   }
 }
 
-// Mostra prompt para salvar credenciais
+// Shows prompt to save credentials
 function showSaveCredentialsPrompt(fieldPair) {
   if (!fieldPair.username?.value || !fieldPair.password?.value) {
-    return; // Não há credenciais para salvar
+    return; // NNo credentials to save
   }
   
   const prompt = document.createElement('div');
@@ -454,7 +454,7 @@ function showSaveCredentialsPrompt(fieldPair) {
     animation: slideIn 0.3s ease;
   `;
   
-  // Botões
+  // Buttons
   const yesBtn = prompt.querySelector('.vivault-save-yes');
   const noBtn = prompt.querySelector('.vivault-save-no');
   
@@ -515,53 +515,53 @@ async function saveCredentials(fieldPair) {
     });
     
     if (response && response.success) {
-      showFeedback(fieldPair.password, '✅ Credenciais salvas no ViVault!');
+      showFeedback(fieldPair.password, '✅ Credentials saved in ViVault!');
     } else {
-      showFeedback(fieldPair.password, '❌ Erro ao salvar credenciais');
+      showFeedback(fieldPair.password, '❌ Error saving credentials');
     }
   } catch (error) {
     console.error('Error saving credentials:', error);
-    showFeedback(fieldPair.password, '❌ Erro ao salvar: ' + error.message);
+    showFeedback(fieldPair.password, '❌ Error saving: ' + error.message);
   }
 }
 
-// Preenche campo com animação e compatibilidade máxima
+// Fills field with animation and maximum compatibility
 function fillFieldWithAnimation(field, value) {
   if (!field || !value) return;
   
   console.log('Filling field:', getFieldIdentifier(field), 'with value length:', value.length);
   
-  // Remove readonly temporariamente se existir
+  // Temporarily removes readonly if it exists
   const wasReadOnly = field.readOnly;
   field.readOnly = false;
   
-  // Foca no campo
+  // Focuses on the field
   field.focus();
-  field.click(); // Alguns sites precisam de click
+  field.click(); // Some sites require click
   
-  // Limpa valor anterior
+  // Clears previous value
   field.value = '';
   field.setAttribute('value', '');
   
-  // Dispara eventos de limpeza
+  // Triggers clearing events
   triggerFieldEvents(field, '');
   
-  // Simula digitação caractere por caractere
+  // Simulates typing character by character
   let i = 0;
   const typeInterval = setInterval(() => {
     if (i < value.length) {
       const currentValue = field.value + value[i];
       
-      // Múltiplas formas de definir o valor para máxima compatibilidade
+      // MMultiple ways to set the value for maximum compatibility
       field.value = currentValue;
       field.setAttribute('value', currentValue);
       
-      // Para campos React/Vue que usam propriedades
+      // For React/Vue fields that use properties
       if (field._valueTracker) {
         field._valueTracker.setValue('');
       }
       
-      // Dispara eventos a cada caractere
+      // Triggers events for each character
       triggerFieldEvents(field, currentValue);
       
       i++;
@@ -582,10 +582,10 @@ function fillFieldWithAnimation(field, value) {
         
       }, 100);
     }
-  }, 30); // Velocidade de digitação mais rápida
+  }, 30); // Faster typing speed
 }
 
-// Função específica para preencher campos de senha com técnicas robustas
+// Specific function to fill password fields with robust techniques
 function fillPasswordFieldWithAnimation(field, value) {
   if (!field || !value) {
     console.log('Password field or value is missing');
@@ -594,48 +594,48 @@ function fillPasswordFieldWithAnimation(field, value) {
   
   console.log('Filling PASSWORD field:', getFieldIdentifier(field), 'with value length:', value.length, 'field type:', field.type);
   
-  // Salva estados originais
+  // Saves original states
   const originalReadOnly = field.readOnly;
   const originalDisabled = field.disabled;
   const originalAutocomplete = field.autocomplete;
   
-  // Remove proteções temporariamente
+  // Temporarily removes protections
   field.readOnly = false;
   field.disabled = false;
   field.autocomplete = 'off';
   
-  // Foca no campo com múltiplas tentativas
+  // Focuses on the field with multiple attempts
   field.focus();
   field.click();
   
-  // Para sites que verificam se o campo está focado
+  // For sites that check if the field is focused
   setTimeout(() => {
     field.focus();
   }, 10);
   
-  // Limpa completamente o campo
+  // Completely clears the field
   field.value = '';
   field.setAttribute('value', '');
   
-  // Alguns sites verificam a propriedade defaultValue
+  // Some sites check the defaultValue property
   if (field.defaultValue !== undefined) {
     field.defaultValue = '';
   }
   
-  // Dispara eventos de limpeza específicos para campos de senha
+  // Triggers clearing events specific to password fields
   field.dispatchEvent(new Event('input', { bubbles: true }));
   field.dispatchEvent(new Event('change', { bubbles: true }));
   
-  // Método 1: Preenchimento direto (mais rápido)
+  // MMethod 1: Direct fill (faster)
   field.value = value;
   field.setAttribute('value', value);
   
   console.log('Direct fill attempt - field value is now:', field.value.length, 'characters');
   
-  // Dispara eventos completos
+  // Triggers complete events
   triggerPasswordFieldEvents(field, value);
   
-  // Método 2: Se o direto não funcionar, tenta caractere por caractere
+  // MMethod 2: If direct fill doesn't work, try character by character
   setTimeout(() => {
     if (!field.value || field.value !== value) {
       console.log('Direct fill failed for password, trying character by character. Current value:', field.value.length);
@@ -648,7 +648,7 @@ function fillPasswordFieldWithAnimation(field, value) {
           field.value += char;
           field.setAttribute('value', field.value);
           
-          // Eventos específicos para cada caractere
+          // Specific events for each character
           triggerPasswordFieldEvents(field, field.value);
           
           console.log('Password char', i + 1, 'of', value.length, 'added. Current length:', field.value.length);
@@ -658,7 +658,7 @@ function fillPasswordFieldWithAnimation(field, value) {
           clearInterval(typeInterval);
           finalizePasswordField(field, value, originalReadOnly, originalDisabled, originalAutocomplete);
         }
-      }, 20); // Velocidade mais rápida para senhas
+      }, 20); // Faster speed for passwords
     } else {
       console.log('Direct fill succeeded for password field');
       finalizePasswordField(field, value, originalReadOnly, originalDisabled, originalAutocomplete);
@@ -666,13 +666,13 @@ function fillPasswordFieldWithAnimation(field, value) {
   }, 100);
 }
 
-// Dispara eventos específicos para campos de senha
+// Triggers events specific to password fields
 function triggerPasswordFieldEvents(field, value) {
-  // Eventos básicos
+  // Basic events
   field.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
   field.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
   
-  // Eventos de teclado (importantes para campos de senha)
+  // Keyboard events (important for password fields)
   const lastChar = value.slice(-1) || '';
   field.dispatchEvent(new KeyboardEvent('keydown', { 
     bubbles: true, 
@@ -688,13 +688,13 @@ function triggerPasswordFieldEvents(field, value) {
     key: lastChar 
   }));
   
-  // Eventos específicos para frameworks
+  // Framework-specific events
   const inputEvent = new Event('input', { bubbles: true });
   inputEvent.simulated = true;
   inputEvent.isTrusted = false;
   field.dispatchEvent(inputEvent);
   
-  // Para React (detecta mudanças por referência)
+  // For React (detects changes by reference)
   try {
     const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
     if (nativeInputValueSetter) {
@@ -704,11 +704,11 @@ function triggerPasswordFieldEvents(field, value) {
     console.log('React value setter not available:', e.message);
   }
   
-  // Dispara evento React personalizado
+  // Triggers custom React event
   field.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-// Finaliza o preenchimento do campo de senha
+// Finalizes password field filling
 function finalizePasswordField(field, value, originalReadOnly, originalDisabled, originalAutocomplete) {
   // Verifica se o valor foi realmente definido
   if (field.value !== value) {
@@ -717,21 +717,21 @@ function finalizePasswordField(field, value, originalReadOnly, originalDisabled,
     field.setAttribute('value', value);
   }
   
-  // Eventos finais
+  // Final events
   triggerFinalEvents(field, value);
   
-  // Restaura estados originais
+  // Restores original states
   field.readOnly = originalReadOnly;
   field.disabled = originalDisabled;
   field.autocomplete = originalAutocomplete;
   
-  // Animação visual
+  // Visual animation
   field.classList.add('vivault-filled');
   setTimeout(() => {
     field.classList.remove('vivault-filled');
   }, 2000);
   
-  // Blur para finalizar
+  // Blur to finalize
   setTimeout(() => {
     field.blur();
   }, 200);
@@ -739,44 +739,44 @@ function finalizePasswordField(field, value, originalReadOnly, originalDisabled,
   console.log('Password field filling completed. Final value length:', field.value.length, 'Expected:', value.length);
 }
 
-// Dispara eventos para compatibilidade com frameworks
+// Triggers events for framework compatibility
 function triggerFieldEvents(field, value) {
-  // Eventos básicos
+  // Basic events
   field.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
   field.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
   
-  // Eventos de teclado para frameworks que os escutam
+  // Keyboard events for frameworks that listen to them
   field.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: value.slice(-1) || '' }));
   field.dispatchEvent(new KeyboardEvent('keypress', { bubbles: true, key: value.slice(-1) || '' }));
   field.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, key: value.slice(-1) || '' }));
   
-  // Evento customizado para React
+  // Custom event for React
   const reactEvent = new Event('input', { bubbles: true });
   reactEvent.simulated = true;
   field.dispatchEvent(reactEvent);
 }
 
-// Eventos finais após preenchimento completo
+// Final events after complete filling
 function triggerFinalEvents(field, value) {
-  // Eventos de finalização
+  // Finalization events
   field.dispatchEvent(new Event('blur', { bubbles: true }));
   field.dispatchEvent(new Event('focusout', { bubbles: true }));
   
-  // Para Angular
+  // For Angular
   field.dispatchEvent(new Event('ng-change', { bubbles: true }));
   
-  // Para Vue
+  // For Vue
   field.dispatchEvent(new CustomEvent('vue:updated', { 
     bubbles: true, 
     detail: { value } 
   }));
   
-  // Força atualização para frameworks que não detectam mudanças
+  // Forces update for frameworks that do not detect changes
   if (field.oninput) field.oninput({ target: field });
   if (field.onchange) field.onchange({ target: field });
 }
 
-// Mostra feedback visual
+// Shows visual feedback
 function showFeedback(field, message) {
   const feedback = document.createElement('div');
   feedback.className = 'vivault-feedback';
@@ -804,23 +804,23 @@ function showFeedback(field, message) {
   }, 3000);
 }
 
-// Inicialização
+// Initialization
 function initViVault() {
   console.log('Initializing ViVault content script');
   
-  // Detecta campos imediatamente
+  // Detect fields immediately
   detectAllLoginFields();
   
-  // Tenta preenchimento automático se houver credenciais
+  // Attempts autofill if credentials are available
   setTimeout(tryAutoFill, 1000);
   
-  // Observa mudanças no DOM
+  // Observes DOM changes
   const observer = new MutationObserver((mutations) => {
     let shouldRedetect = false;
     
     mutations.forEach(mutation => {
       if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-        // Verifica se foram adicionados novos inputs
+        // Checks if new inputs were added
         for (const node of mutation.addedNodes) {
           if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.tagName === 'INPUT' || node.querySelector('input')) {
@@ -845,11 +845,11 @@ function initViVault() {
     subtree: true
   });
   
-  // Observa foco em campos para mostrar sugestões
+  // Observes focus on fields to show suggestions
   document.addEventListener('focusin', handleFieldFocus);
 }
 
-// Tenta preenchimento automático proativo
+// Attempts proactive autofill
 async function tryAutoFill() {
   if (loginFields.size === 0) {
     console.log('No login fields detected for proactive autofill');
@@ -870,7 +870,7 @@ async function tryAutoFill() {
     if (response && response.success) {
       console.log('Found saved credentials for proactive fill. Username:', response.username, 'Password length:', response.password?.length);
       
-      // Mostra sugestão de preenchimento para o primeiro par de campos
+      // Shows autofill suggestion for the first pair of fields
       const firstPair = loginFields.values().next().value;
       if (firstPair && !firstPair.username?.value && !firstPair.password?.value) {
         showAutoFillSuggestion(firstPair, response);
@@ -885,7 +885,7 @@ async function tryAutoFill() {
   }
 }
 
-// Mostra sugestão de preenchimento automático
+// Shows autofill suggestion
 function showAutoFillSuggestion(fieldPair, credentials) {
   const suggestion = document.createElement('div');
   suggestion.className = 'vivault-autofill-suggestion';
@@ -918,7 +918,7 @@ function showAutoFillSuggestion(fieldPair, credentials) {
     animation: slideInRight 0.3s ease;
   `;
   
-  // Estilizar botões
+  // Styles buttons
   const fillBtn = suggestion.querySelector('.vivault-fill-btn');
   const dismissBtn = suggestion.querySelector('.vivault-dismiss-btn');
   
@@ -942,7 +942,7 @@ function showAutoFillSuggestion(fieldPair, credentials) {
     color: #666;
   `;
   
-  // Eventos
+  // Events
   fillBtn.addEventListener('click', () => {
     handleAutoFill(fieldPair);
     document.body.removeChild(suggestion);
@@ -954,7 +954,7 @@ function showAutoFillSuggestion(fieldPair, credentials) {
   
   document.body.appendChild(suggestion);
   
-  // Auto remove após 15 segundos
+  // Auto remove after 15 seconds
   setTimeout(() => {
     if (suggestion.parentNode) {
       suggestion.parentNode.removeChild(suggestion);
@@ -962,13 +962,13 @@ function showAutoFillSuggestion(fieldPair, credentials) {
   }, 15000);
 }
 
-// Manipula foco em campos
+// Handles focus on fields
 function handleFieldFocus(event) {
   if (event.target.tagName !== 'INPUT') return;
   
   const field = event.target;
   
-  // Se é um campo de senha vazio, mostra dica
+  // If it's an empty password field, show hint
   if (field.type === 'password' && !field.value) {
     setTimeout(() => {
       if (field === document.activeElement && !field.value) {
@@ -978,9 +978,9 @@ function handleFieldFocus(event) {
   }
 }
 
-// Mostra dica do ViVault
+// Shows ViVault hint
 function showViVaultHint(field) {
-  // Verifica se já existe uma dica
+  // Checks if a hint already exists
   if (document.querySelector('.vivault-hint')) return;
   
   const hint = document.createElement('div');
@@ -1000,14 +1000,14 @@ function showViVaultHint(field) {
     animation: fadeIn 0.3s ease;
   `;
   
-  // Posiciona abaixo do campo
+  // Positions below the field
   const rect = field.getBoundingClientRect();
   hint.style.top = `${rect.bottom + window.scrollY + 5}px`;
   hint.style.left = `${rect.left + window.scrollX}px`;
   
   document.body.appendChild(hint);
   
-  // Remove quando o campo perde o foco ou após 5 segundos
+  // Removes when the field loses focus or after 5 seconds
   const removeHint = () => {
     if (hint.parentNode) {
       hint.parentNode.removeChild(hint);
@@ -1018,13 +1018,13 @@ function showViVaultHint(field) {
   setTimeout(removeHint, 5000);
 }
 
-// Adiciona atalho de teclado
+// Adds keyboard shortcut
 document.addEventListener('keydown', (event) => {
-  // Ctrl+Shift+V para preencher
+  // Ctrl+Shift+V to fill
   if (event.ctrlKey && event.shiftKey && event.key === 'V') {
     event.preventDefault();
     
-    // Encontra o par de campos mais próximo
+    // Finds the nearest pair of fields
     const activeField = document.activeElement;
     if (activeField && activeField.tagName === 'INPUT') {
       
@@ -1038,19 +1038,19 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-// Executa quando a página carrega
+// Executes when the page loads
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initViVault);
 } else {
   initViVault();
 }
 
-// Também executa após o load completo para SPAs
+// Also executes after full load for SPAs
 window.addEventListener('load', () => {
   setTimeout(detectAllLoginFields, 1000);
 });
 
-// Adiciona estilos CSS para animações
+// Adds CSS styles for animations
 const style = document.createElement('style');
 style.textContent = `
   @keyframes fadeInOut {

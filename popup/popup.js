@@ -249,11 +249,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 /**
- * Filtra a lista de senhas para mostrar apenas as que contenham o texto
- * de busca inserido pelo usuário.
+ * Filter the list of passwords to show only those that contain the search text
+ * entered by the user.
  *
- * @param {string} query - O texto de busca inserido pelo usuário.
- * @returns {Array} Uma lista de senhas filtradas.
+ * @param {string} query - The search text entered by the user.
+ * @returns {Array} A list of filtered passwords.
  */
     function filterPasswords() {
         const query = searchInput.value.toLowerCase();
@@ -265,10 +265,15 @@ document.addEventListener('DOMContentLoaded', function() {
         displayPasswords(filtered);
     }
 
+/**
+ * Toggle the visibility of the add form and change the text of the add new button accordingly.
+ * If the form is visible, clear the form fields and change the button text to 'Cancel'.
+ * If the form is not visible, focus the site name input field and change the button text to '+ Add New Password'.
+ */
     function toggleAddForm() {
         const isVisible = addForm.style.display !== 'none';
         addForm.style.display = isVisible ? 'none' : 'block';
-        addNewBtn.textContent = isVisible ? '+ Adicionar Nova Senha' : 'Cancelar';
+        addNewBtn.textContent = isVisible ? '+ Add New Password' : 'Cancel';
         
         if (!isVisible) {
             siteNameInput.focus();
@@ -296,12 +301,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = passwordInput.value.trim();
 
         if (!siteName || !username || !password) {
-            alert('Por favor, preencha todos os campos obrigatórios');
+            alert('Please fill in all the required fields');
             return;
         }
 
         try {
-            saveBtn.textContent = 'Salvando...';
+            saveBtn.textContent = 'Saving...';
             saveBtn.disabled = true;
 
             const response = await chrome.runtime.sendMessage({
@@ -316,22 +321,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (!response) {
-                alert('Erro de comunicação com o background script. Tente recarregar a extensão.');
+                alert('Error saving password.');
                 return;
             }
 
             if (response.success) {
                 await loadPasswords();
                 toggleAddForm();
-                showTooltip(saveBtn, response.message || 'Senha salva com sucesso!');
+                showTooltip(saveBtn, response.message || 'Password saved successfully!');
             } else {
-                alert(response.message || 'Erro ao salvar a senha');
+                alert(response.message || 'Error saving password');
             }
         } catch (error) {
             console.error('Error saving password:', error);
-            alert('Erro ao salvar a senha: ' + error.message);
+            alert('Error saving password: ' + error.message);
         } finally {
-            saveBtn.textContent = 'Salvar';
+            saveBtn.textContent = 'Save Password';
             saveBtn.disabled = false;
         }
     }
